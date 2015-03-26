@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"CS244 Spring 2013 Assignment 1: Bufferbloat"
+"CS244 Spring 2015 Assignment 1: Bufferbloat"
 
 from mininet.topo import Topo
 from mininet.node import CPULimitedHost
@@ -77,7 +77,7 @@ class BBTopo(Topo):
 
         # Here I have created a switch.  If you change its name, its
         # interface names will change from s0-eth1 to newname-eth1.
-        self.addSwitch('s0')
+        switch = self.addSwitch('s0')
 
         # TODO: Add links with appropriate characteristics
         return
