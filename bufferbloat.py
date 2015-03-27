@@ -70,9 +70,7 @@ args = parser.parse_args()
 class BBTopo(Topo):
     "Simple topology for bufferbloat experiment."
 
-    def __init__(self, n=2):
-        super(BBTopo, self).__init__()
-
+    def build(self, n=2):
         # TODO: create two hosts
 
         # Here I have created a switch.  If you change its name, its
