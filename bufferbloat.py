@@ -100,7 +100,7 @@ def start_qmon(iface, interval_sec=0.1, outfile="q.txt"):
     return monitor
 
 def start_iperf(net):
-    h2 = net.getNodeByName('h2')
+    h2 = net.get('h2')
     print "Starting iperf server..."
     # For those who are curious about the -w 16m parameter, it ensures
     # that the TCP flow is not receiver window limited.  If it is,
@@ -110,7 +110,7 @@ def start_iperf(net):
     # long lived TCP flow.
 
 def start_webserver(net):
-    h1 = net.getNodeByName('h1')
+    h1 = net.get('h1')
     proc = h1.popen("python http/webserver.py", shell=True)
     sleep(1)
     return [proc]
