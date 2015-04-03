@@ -1,7 +1,6 @@
 from helper import *
 from collections import defaultdict
 import argparse
-import subprocess as sub
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--sport', help="Enable the source port filter (Default is dest port)", action='store_true', dest="sport", default=False)
