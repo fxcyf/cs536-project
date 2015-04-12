@@ -72,12 +72,18 @@ class BBTopo(Topo):
 
     def build(self, n=2):
         # TODO: create two hosts
+        # XXX: Do I care about the n = 2 line?  WTF is that?
+        h0 = self.addHost('h0')
+        h1 = self.addHost('h1')
 
         # Here I have created a switch.  If you change its name, its
         # interface names will change from s0-eth1 to newname-eth1.
         switch = self.addSwitch('s0')
 
         # TODO: Add links with appropriate characteristics
+        # XXX: Figure out wtf the options are for this
+        self.addLink(h0, switch)
+        self.addLink(switch, h1)
         return
 
 # Simple wrappers around monitoring utilities.  You are welcome to
@@ -129,6 +135,7 @@ def bufferbloat():
         os.makedirs(args.dir)
     os.system("sysctl -w net.ipv4.tcp_congestion_control=%s" % args.cong)
     topo = BBTopo()
+    topo.build()
     net = Mininet(topo=topo, host=CPULimitedHost, link=TCLink)
     net.start()
     # This dumps the topology and how nodes are interconnected through
