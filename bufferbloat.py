@@ -82,8 +82,9 @@ class BBTopo(Topo):
 
         # TODO: Add links with appropriate characteristics
         # XXX: Figure out wtf the options are for this
-        self.addLink(h1, switch)
-        self.addLink(switch, h2)
+        delay = "{0}ms".format(args.delay)
+        self.addLink(h1, switch, bw=args.bw_host, delay=delay, max_queue_size=args.maxq)
+        self.addLink(switch, h2, bw=args.bw_net, delay=delay, max_queue_size=args.maxq)
         return
 
 # Simple wrappers around monitoring utilities.  You are welcome to
@@ -178,6 +179,7 @@ def bufferbloat():
     # command does: curl -o /dev/null -s -w %{time_total} google.com
     # Now use the curl command to fetch webpage from the webserver you
     # spawned on host h1 (not from google!)
+
 
     # Hint: have a separate function to do this and you may find the
     # loop below useful.
