@@ -73,8 +73,8 @@ class BBTopo(Topo):
     def build(self, n=2):
         # TODO: create two hosts
         # XXX: Do I care about the n = 2 line?  WTF is that?
-        h0 = self.addHost('h0')
         h1 = self.addHost('h1')
+        h2 = self.addHost('h2')
 
         # Here I have created a switch.  If you change its name, its
         # interface names will change from s0-eth1 to newname-eth1.
@@ -82,8 +82,8 @@ class BBTopo(Topo):
 
         # TODO: Add links with appropriate characteristics
         # XXX: Figure out wtf the options are for this
-        self.addLink(h0, switch)
-        self.addLink(switch, h1)
+        self.addLink(h1, switch)
+        self.addLink(switch, h2)
         return
 
 # Simple wrappers around monitoring utilities.  You are welcome to
@@ -112,6 +112,17 @@ def start_iperf(net):
     server = h2.popen("iperf -s -w 16m")
     # TODO: Start the iperf client on h1.  Ensure that you create a
     # long lived TCP flow.
+    # XXX: WTF is the iperf command to run on h1?
+    h1 = net.get('h1')
+    print("Starting iperf client...")
+    #print('iperf -c {0} -t {1}'.format(h2, args.time), stdout=PIPE, stderr=PIPE)
+    client = h1.popen('iperf -c {0} -t {1}'.format(h2.IP(), args.time), stdout=PIPE, stderr=PIPE)
+    #stdout, stderr = client.communicate()
+    #print("WAT")
+    #print(stdout)
+    #print(stderr)
+    #print("WAT")
+    #CLI(net)
 
 def start_webserver(net):
     h1 = net.get('h1')
@@ -127,8 +138,10 @@ def start_ping(net):
     # Hint: Use host.popen(cmd, shell=True).  If you pass shell=True
     # to popen, you can redirect cmd's output using shell syntax.
     # i.e. ping ... > /path/to/ping.
-    pass
-
+    h1, h2 = net.get('h1'), net.get('h2')
+    print("Starting ping party")
+    h1.popen('ping -i .1 {0} > {1}/ping.txt 2> {1}/ping-err.txt'.format(h2.IP(), args.dir), shell=True)
+    print('ping -i .1 {0} > {1}/ping.txt 2> {1}/ping-err.txt'.format(h2.IP(), args.dir))
 
 def bufferbloat():
     if not os.path.exists(args.dir):
@@ -156,7 +169,9 @@ def bufferbloat():
                       outfile='%s/q.txt' % (args.dir))
 
     # TODO: Start iperf, webservers, etc.
-    # start_iperf(net)
+    start_iperf(net)
+    start_webserver(net)
+    start_ping(net)
 
     # TODO: measure the time it takes to complete webpage transfer
     # from h1 to h2 (say) 3 times.  Hint: check what the following
