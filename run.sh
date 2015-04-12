@@ -15,6 +15,8 @@ for qsize in 20 100; do
     dir=bb-q$qsize
 
     # TODO: Run bufferbloat.py here...
+    # XXX: difference between -B and -b for the purposes of this experiment?  I think the rest are correct.
+    python bufferbloat.py -b $bwnet --delay $delay -d $dir -t $time --maxq $qsize
 
     # TODO: Ensure the input file names match the ones you use in
     # bufferbloat.py script.  Also ensure the plot file names match
