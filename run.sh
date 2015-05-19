@@ -4,7 +4,7 @@
 # using sudo.
 
 time=200
-bwnet=1.5
+bwnet=4
 delay=10
 
 iperf_port=5001
