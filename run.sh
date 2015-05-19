@@ -11,4 +11,4 @@ iperf_port=5001
 
 dir=tfo
 
-python tcp_fastopen.py -b $bwnet --delay $delay -d $dir -t $time 
+python tcp_fastopen.py -b $bwnet --delay $delay -d $dir --tfo

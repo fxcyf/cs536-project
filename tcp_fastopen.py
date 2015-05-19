@@ -42,10 +42,9 @@ parser.add_argument('--dir', '-d',
                     help="Directory to store outputs",
                     required=True)
 
-parser.add_argument('--time', '-t',
-                    help="Duration (sec) to run the experiment",
-                    type=int,
-                    default=10)
+parser.add_argument('--tfo', '-t',
+                    help="set TCP Fast Open enabled",
+                    action="store_true") 
 
 # Linux uses CUBIC-TCP by default that doesn't have the usual sawtooth
 # behaviour.  For those who are curious, invoke this script with
@@ -90,8 +89,8 @@ def ping_test(net):
             return False
 
         time = float(m.group(1))
-        min_rtt = target * 2 - tolerance_ms
-        max_rtt = target * 2 + tolerance_ms
+        min_rtt = target - tolerance_ms
+        max_rtt = target + tolerance_ms
 
         if abs(time - target) > tolerance_ms:
             message = "FAILED: bad delay({0}ms) from {1} to {2}".format(time, client, server)
@@ -109,17 +108,20 @@ def ping_test(net):
 
 def start_webserver(net, tfo_enabled):
     h2 = net.get('h2')
-    proc = h2.popen("python http/webserver.py", shell=True)
+    proc = h2.popen("python http/webserver.py {0}".format('--tfo' if tfo_enabled else ''), shell=True, stdout = PIPE, stderr = PIPE)
+    stdout, stderr = proc.communicate()
+    print stdout
+    print stderr
     return [proc]
 
 def run_performance_tests(net):
     h1, h2 = net.get('h1', 'h2')
-    client = h1.popen("time sudo mget -p --delete-after --no-http-keep-alive --no-cache {0}/http/Amazon".format(h2.IP()), shell=True, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = client.communicate()
+    client = h1.popen("time sudo mget -r --delete-after {0}/http/Amazon".format(h2.IP()), shell=True, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = client.communicate() #time goes in stderr
     print stdout
-    print '------------------------------------------------------'
-    print stderr
-    
+    m = re.search(':(.*)elapsed', stderr)
+    time = float(m.group(1))
+    return time
 
 def tcp_fastopen():
     if not os.path.exists(args.dir):
@@ -132,28 +134,22 @@ def tcp_fastopen():
     # This dumps the topology and how nodes are interconnected through
     # links.
     dumpNodeConnections(net.hosts)
+    proc = start_webserver(net, args.tfo)[0]
     # This performs a basic all pairs ping test.
     net.pingAll()
 
     #test conectivity
     ping_test(net)
 
-    #start webserver with no TFO
-    start_webserver(net, tfo_enabled=False)
-    non_tfo_results = run_performance_tests(net)
-    print 'hit'
-    Popen("pgrep -f webserver.py | xargs kill -9", shell=True).wait()
-
-    print 'hi'
-
-    #start webserver with TFO
-    #start_webserver(net, tfo_enabled=True)
-    #tfo_results = run_performance_tests(net)
+    non_tfo_result = run_performance_tests(net)
+    print non_tfo_result
+    proc.kill()
 
     net.stop()
 
     # Ensure that all processes you create within Mininet are killed.
     # Sometimes they require manual killing.
+    os.system("killall -9 top bwm-ng tcpdump cat mnexec iperf; mn -c")
     Popen("pgrep -f webserver.py | xargs kill -9", shell=True).wait()
 
 if __name__ == "__main__":
