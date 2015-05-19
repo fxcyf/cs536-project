@@ -108,10 +108,7 @@ def ping_test(net):
 
 def start_webserver(net, tfo_enabled):
     h2 = net.get('h2')
-    proc = h2.popen("python http/webserver.py {0}".format('--tfo' if tfo_enabled else ''), shell=True, stdout = PIPE, stderr = PIPE)
-    stdout, stderr = proc.communicate()
-    print stdout
-    print stderr
+    proc = h2.popen("python http/webserver.py {0}".format('--tfo' if tfo_enabled else ''), shell=True)
     return [proc]
 
 def run_performance_tests(net):

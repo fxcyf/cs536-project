@@ -9,6 +9,10 @@ delay=10
 
 iperf_port=5001
 
-dir=tfo
+#enable tcp fast open
+echo "519" > /proc/sys/net/ipv4/tcp_fastopen
+python tcp_fastopen.py -b $bwnet --delay $delay -d withtfo --tfo
 
-python tcp_fastopen.py -b $bwnet --delay $delay -d $dir --tfo
+#disable it
+echo "0" > /proc/sys/net/ipv4/tcp_fastopen
+python tcp_fastopen.py -b $bwnet --delay $delay -d notfo --tfo
