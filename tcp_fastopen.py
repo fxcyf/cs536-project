@@ -68,8 +68,8 @@ class Topo(Topo):
         switch = self.addSwitch('s0')
 
         delay = "{0}ms".format(args.delay/2.0)
-        self.addLink(h1, switch, bw=4, delay=delay)
-        self.addLink(switch, h2, bw=4, delay=delay)
+        self.addLink(h1, switch, delay=delay)
+        self.addLink(switch, h2, delay=delay)
         return
 
 
