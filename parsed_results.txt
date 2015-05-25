@@ -1,0 +1,13 @@
+           Page        RTT(ms)PLT: non-TFO(s)    PLT: TFO(s)        Improv.
+         amazon             20          12.93          13.19             2%
+         amazon            100          15.93          19.06            20%
+         amazon            200         26.145         32.315            24%
+   newyorktimes             20          5.035          5.475             9%
+   newyorktimes            100          7.295          9.475            30%
+   newyorktimes            200         12.605          16.85            34%
+            wsj             20         11.065         11.455             4%
+            wsj            100         13.515          15.59            15%
+            wsj            200          19.85          23.62            19%
+      wikipedia             20           0.94           1.07            14%
+      wikipedia            100           1.91           2.43            27%
+      wikipedia            200           3.73           4.62            24%
