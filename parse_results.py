@@ -21,7 +21,7 @@ def parse_results():
             if not entry:
                 break
             entry[1] = str(int(entry[1]) * 2) #double delay to get RTT
-            improvement = float(entry[3])/float(entry[2]) - 1
+            improvement = float(entry[2])/float(entry[3]) - 1
             improvement = int(round(improvement, 2) * 100)
             entry.append(str(improvement) + "%")
             entry = map(str.strip, entry)

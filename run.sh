@@ -15,16 +15,16 @@ for site in amazon newyorktimes wsj wikipedia; do
         echo "$site" >> $result_dir
         echo "$delay" >> $result_dir
 
+        #disable tcp fast open
+        echo "0" > /proc/sys/net/ipv4/tcp_fastopen
+        python tcp_fastopen.py -s $site --delay $delay -d $result_dir
+
         #enable tcp fast open
         echo "519" > /proc/sys/net/ipv4/tcp_fastopen
         python tcp_fastopen.py -s $site --delay $delay -d $result_dir --tfo
-
-        #disable it
-        echo "0" > /proc/sys/net/ipv4/tcp_fastopen
-        python tcp_fastopen.py -s $site --delay $delay -d $result_dir
     done
 done
 
 #get results
-python parse_results.py -f $result_dir
+python parse_results.py -f $result_dir > parsed_results.txt
 
