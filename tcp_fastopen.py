@@ -21,16 +21,13 @@ import re
 import sys
 import os
 import math
+import json
 
 parser = ArgumentParser(description="TFO tests")
-parser.add_argument('--bw-host', '-B',
-                    type=float,
-                    help="Bandwidth of host links (Mb/s)",
-                    default=4)
 
-parser.add_argument('--bw-net', '-b',
-                    type=float,
-                    help="Bandwidth of bottleneck (network) link (Mb/s)",
+parser.add_argument('--host_server', '-s',
+                    type=str,
+                    help="Name of website to download from",
                     required=True)
 
 parser.add_argument('--delay',
@@ -69,9 +66,10 @@ class Topo(Topo):
         switch = self.addSwitch('s0')
 
         delay = "{0}ms".format(args.delay/2.0)
-        self.addLink(h1, switch, bw=args.bw_host, delay=delay)
-        self.addLink(switch, h2, bw=args.bw_net, delay=delay)
+        self.addLink(h1, switch, bw=4, delay=delay)
+        self.addLink(switch, h2, bw=4, delay=delay)
         return
+
 
 def ping_test(net):
     print("Starting RTT test...")
@@ -113,9 +111,8 @@ def start_webserver(net, tfo_enabled):
 
 def run_performance_tests(net):
     h1, h2 = net.get('h1', 'h2')
-    client = h1.popen("time sudo mget -r --delete-after {0}/http/Amazon".format(h2.IP()), shell=True, stdout=PIPE, stderr=PIPE)
+    client = h1.popen("time sudo mget -r --delete-after {0}/http/{1}".format(h2.IP(), args.host_server + '.html'), shell=True, stdout=PIPE, stderr=PIPE)
     stdout, stderr = client.communicate() #time goes in stderr
-    print stdout
     m = re.search(':(.*)elapsed', stderr)
     time = float(m.group(1))
     return time
@@ -138,8 +135,11 @@ def tcp_fastopen():
     #test conectivity
     ping_test(net)
 
-    non_tfo_result = run_performance_tests(net)
-    print non_tfo_result
+    result = sum(run_performance_tests(net) for i in range(2))/2.0
+    print result
+    with open(args.dir, "a") as myfile:
+            myfile.write(str(result) + '\n')
+
     proc.kill()
 
     net.stop()

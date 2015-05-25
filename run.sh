@@ -3,16 +3,28 @@
 # Note: Mininet must be run as root.  So invoke this shell script
 # using sudo.
 
-time=200
-bwnet=4
-delay=10
 
 iperf_port=5001
+result_dir="results.txt"
+rm -rf $result_dir
+touch $result_dir
 
-#enable tcp fast open
-echo "519" > /proc/sys/net/ipv4/tcp_fastopen
-python tcp_fastopen.py -b $bwnet --delay $delay -d withtfo --tfo
 
-#disable it
-echo "0" > /proc/sys/net/ipv4/tcp_fastopen
-python tcp_fastopen.py -b $bwnet --delay $delay -d notfo --tfo
+for site in amazon newyorktimes wsj wikipedia; do
+    for delay in 10 50 100; do
+        echo "$site" >> $result_dir
+        echo "$delay" >> $result_dir
+
+        #enable tcp fast open
+        echo "519" > /proc/sys/net/ipv4/tcp_fastopen
+        python tcp_fastopen.py -s $site --delay $delay -d $result_dir --tfo
+
+        #disable it
+        echo "0" > /proc/sys/net/ipv4/tcp_fastopen
+        python tcp_fastopen.py -s $site --delay $delay -d $result_dir
+    done
+done
+
+#get results
+python parse_results.py -f $result_dir
+
