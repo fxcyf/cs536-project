@@ -23,6 +23,8 @@ import os
 import math
 import json
 
+NUM_TRIALS = 1
+
 parser = ArgumentParser(description="TFO tests")
 
 parser.add_argument('--host_server', '-s',
@@ -135,7 +137,7 @@ def tcp_fastopen():
     #test conectivity
     ping_test(net)
 
-    result = sum(run_performance_tests(net) for i in range(2))/2.0
+    result = sum(run_performance_tests(net) for i in range(NUM_TRIALS))/float(NUM_TRIALS)
     print result
     with open(args.dir, "a") as myfile:
             myfile.write(str(result) + '\n')
