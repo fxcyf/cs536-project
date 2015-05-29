@@ -45,13 +45,9 @@ parser.add_argument('--tfo', '-t',
                     help="set TCP Fast Open enabled",
                     action="store_true") 
 
-# Linux uses CUBIC-TCP by default that doesn't have the usual sawtooth
-# behaviour.  For those who are curious, invoke this script with
-# --cong cubic and see what happens...
-# sysctl -a | grep cong should list some interesting parameters.
 parser.add_argument('--cong',
                     help="Congestion control algorithm to use",
-                    default="reno")
+                    default="bic")
 
 # Expt parameters
 args = parser.parse_args()
@@ -62,14 +58,8 @@ class Topo(Topo):
     def build(self, n=2):
         h1 = self.addHost('h1')
         h2 = self.addHost('h2')
-
-        # Here I have created a switch.  If you change its name, its
-        # interface names will change from s0-eth1 to newname-eth1.
-        switch = self.addSwitch('s0')
-
-        delay = "{0}ms".format(args.delay/2.0)
-        self.addLink(h1, switch, delay=delay)
-        self.addLink(switch, h2, delay=delay)
+        delay = "{0}ms".format(args.delay)
+        self.addLink(h1, h2, delay=delay)
         return
 
 
