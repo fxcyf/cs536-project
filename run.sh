@@ -27,4 +27,5 @@ done
 
 #get results
 python parse_results.py -f $result_dir > parsed_results.txt
-
+#show results
+cat parsed_results.txt
