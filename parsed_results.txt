@@ -1,1 +1,4 @@
            Page        RTT(ms)PLT: non-TFO(s)    PLT: TFO(s)        Improv.
+         amazon             20          0.055          0.053             4%
+         amazon            100          0.055          0.055             0%
+         amazon            200          0.053          0.055            -4%
