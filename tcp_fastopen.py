@@ -69,9 +69,12 @@ def ping_test(net):
     h1 = net.get('h1')
     tolerance_ms = 1
     def validate_rtt(client, server, target):
+        print("server IP: {}".format(server.IP()))
         client_process = client.popen('ping -c 1 {0}'.format(server.IP()), stdout=PIPE)
-        stdout, _ = client_process.communicate()
-        m = re.search('time=(.*) ', stdout)
+        stdout, strerr = client_process.communicate()
+        m = re.search('time=(.*) ', stdout.decode("utf-8", "ignore"))
+        print("ping test stdout: {}".format(stdout.decode("utf-8")))
+
         if not m:
             message = "FAILED: can't ping from {0} to {1}".format(client, server)
             T.cprint(message, "red", attrs=["bold"])
@@ -98,16 +101,21 @@ def ping_test(net):
 
 def start_webserver(net, tfo_enabled):
     h2 = net.get('h2')
-    proc = h2.popen("python http/webserver.py {0}".format('--tfo' if tfo_enabled else ''), shell=True)
+    proc = h2.popen("python3 http/webserver.py {0}".format('--tfo' if tfo_enabled else ''), shell=True)
     return [proc]
 
 def run_performance_tests(net):
-    h1, h2 = net.get('h1', 'h2')
-    client = h1.popen("time sudo mget -r --delete-after {0}/http/{1}".format(h2.IP(), args.host_server + '.html'), shell=True, stdout=PIPE, stderr=PIPE)
-    stdout, stderr = client.communicate() #time goes in stderr
-    m = re.search(':(.*)elapsed', stderr)
-    time = float(m.group(1))
-    return time
+    h2 = net.get('h2')
+    h1 = net.get('h1')
+    h1_process = h1.popen("time sudo wget -r --delete-after -o log {0}/http/{1}".format(h2.IP(), args.host_server + '.html'), shell=True, stdout=PIPE, stderr=PIPE)
+    stdout, stderr = h1_process.communicate() #time goes in stderr
+    m = re.search('real\s+(.*)m(.*)s', stderr.decode("utf-8", "ignore"))
+    print("run performance test stderr: {}".format(stderr.decode("utf-8")))
+    minute = float(m.group(1))
+    second = float(m.group(2))
+
+    return minute * 60 + second
+
 
 def tcp_fastopen():
     if not os.path.exists(args.dir):

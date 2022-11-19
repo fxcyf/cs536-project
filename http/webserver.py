@@ -1,5 +1,5 @@
-import SimpleHTTPServer
-import SocketServer
+from http import server
+import socketserver 
 import socket
 from argparse import ArgumentParser
 
@@ -11,7 +11,7 @@ parser.add_argument('--tfo', '-t',
 # Expt parameters
 args = parser.parse_args()
 
-class CS244Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+class CustomHandler(server.SimpleHTTPRequestHandler):
 
     
     # Disable logging DNS lookups
@@ -20,14 +20,14 @@ class CS244Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 
 PORT = 80
-Handler = CS244Handler
-httpd = SocketServer.TCPServer(("", PORT), Handler)
+Handler = CustomHandler
+httpd = socketserver.TCPServer(("", PORT), Handler)
 if (args.tfo):
-    print 'TCP Fast Open enabled'
+    print('TCP Fast Open enabled')
     #no idea why I need the value 5 or what it is, but below blog recommends it
     #23 is TCP_FAST_OPEN which for some reason doesn't exist in 
     #my version of python. 
     #See http://edsiper.linuxchile.cl/blog/2013/02/21/linux-tcp-fastopen-in-your-sockets/
     httpd.socket.setsockopt(socket.SOL_TCP, 23, 5) 
-print "Server1: httpd serving at port", PORT
+print("Server1: httpd serving at port {}".format(PORT))
 httpd.serve_forever()
