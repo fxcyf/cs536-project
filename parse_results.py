@@ -13,8 +13,8 @@ args = parser.parse_args()
 
 def parse_results():
     row_format ="{:>15}" * 5
-    print row_format.format("Page", "RTT(ms)", "PLT: non-TFO(s)",
-                            "PLT: TFO(s)", "Improv.")
+    print(row_format.format("Page", "RTT(ms)", "PLT: non-TFO(s)",
+                            "PLT: TFO(s)", "Improv."))
     with open(args.result_file) as f:
         while True:
             entry = list(islice(f, 4))
@@ -25,7 +25,7 @@ def parse_results():
             improvement = int(round(improvement, 2) * 100)
             entry.append(str(improvement) + "%")
             entry = map(str.strip, entry)
-            print row_format.format(*entry)
+            print(row_format.format(*entry))
 
 if __name__ == "__main__":
     parse_results()

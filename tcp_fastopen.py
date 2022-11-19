@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 "CS244 Spring 2015 Assignment 3: TCP fast open"
 
@@ -128,7 +128,7 @@ def tcp_fastopen():
     ping_test(net)
 
     result = sum(run_performance_tests(net) for i in range(NUM_TRIALS))/float(NUM_TRIALS)
-    print result
+    print(result)
     with open(args.dir, "a") as myfile:
             myfile.write(str(result) + '\n')
 
@@ -145,9 +145,9 @@ if __name__ == "__main__":
     try:
         tcp_fastopen()
     except:
-        print "-"*80
-        print "Caught exception.  Cleaning up..."
-        print "-"*80
+        print("-"*80)
+        print("Caught exception.  Cleaning up...")
+        print("-"*80)
         import traceback
         traceback.print_exc()
         os.system("killall -9 top bwm-ng tcpdump cat mnexec iperf; mn -c")

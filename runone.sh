@@ -15,11 +15,11 @@ for site in amazon; do
         echo "$delay" >> results.txt
         #enable tcp fast open
         echo "519" > /proc/sys/net/ipv4/tcp_fastopen
-        python tcp_fastopen.py -s $site --delay $delay -d results.txt --tfo
+        python3 tcp_fastopen.py -s $site --delay $delay -d results.txt --tfo
 
         #disable it
         echo "0" > /proc/sys/net/ipv4/tcp_fastopen
-        python tcp_fastopen.py -s $site --delay $delay -d results.txt
+        python3 tcp_fastopen.py -s $site --delay $delay -d results.txt
     done
 done
 
